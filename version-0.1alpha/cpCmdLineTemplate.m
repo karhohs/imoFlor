@@ -1,0 +1,1 @@
+%CellProfiler.exe -c -r -i ~/my_image_directory -o ~/my_output_directory -p ~/my_pipe.mat
