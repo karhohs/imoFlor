@@ -1,15 +1,15 @@
 %% cpCSVmaker
-% Converts a folder of TIFF images created via Metamorph into PNG images.
-% A |.mat| file containing metadata about all the images is also created.
+% Converts a folder of TIFF images created via Metamorph into PNG images. A
+% |.mat| file containing metadata about all the images is also created.
 %
 % PNG images are preferred to TIFF images, because the format is simpler
 % and more standardized. Also, the PNG has better lossless compression for
 % this type of image.
 %
-%   [] = cpCSVmaker(outpath)
+%   [] = cpCSVmaker(path)
 %
 %%% Input
-% * outpath: a char. The path where the image metadata is located.
+% * path: a char. The path where the image metadata is located.
 %
 %%% Output:
 % There is no direct argument output. Rather, a CSV file the is compatible
@@ -19,67 +19,44 @@
 %
 %
 %%% Other Notes
-% 
+%
 function [] = cpCSVmaker(path)
-if isempty(path)
-    path = 'M:\Working\SI_201211B_ff\A549\48h';
+%% Import PNG paths
+% The PNG paths are stored in the image metadata. Import this data file
+% into the MATLAB workspace.
+load(fullfile(path,'imageMetadata.mat'));
+%% Create the header to the CSV file
+%
+header = cell(1,2*imageMetadata.numbers.howManyW);
+for i=1:imageMetadata.numbers.howManyW
+    header{2*i-1} = sprintf('Image_FileName_%s',imageMetadata.wavelengthInfo{i+1,2});
+    header{2*i} = sprintf('Image_PathName_%s',imageMetadata.wavelengthInfo{i+1,2});
 end
-startpath = pwd;
-%% ----- Import PNG paths -----
-%Check whether the computer is a mac
-if ismac
-    error('manSeg:notApc','Flatfield correction is currently configured to run on a pc');
-    %[~,filepaths]=system('ls -Rp */*.png');
-elseif ispc
-    %the 'dir' command in Matlab does not search subfolders. However,
-    %there is a MS-DOS command that will do the trick!
-    %'/B' uses bare format (no heading information or summary)
-    %'/S' displays files in specified directory and all subdirectories
-    cd(path)
-    [~,filepaths] = system('dir /S /B *.png');
-    filepaths = textscan(filepaths,'%s','Whitespace','\b\t');
-    filepaths = filepaths{1};
-else
-    error('manSeg:notApc','IF_timeseries_template.m is currently configured to run on a pc');
-end
-header = {'Image_FileName_Cy5',... %1
-    'Image_PathName_Cy5',... %2
-    'Image_FileName_FITC',... %3
-    'Image_PathName_FITC',... %4
-    'Image_FileName_DAPI',... %5
-    'Image_PathName_DAPI'}; %6
+%% Add the filenames to the CSV file
+%
 M = cell(10000,length(header));
-for i=1:length(filepaths)
-    [pathstr,fname,ext] = fileparts(filepaths{i});
-    reg = regexp(fname,'(?<=_w\d+)[^_]+','match');
-    if isempty(reg)
-        continue;
-    end
-    reg = reg{1};
-    regsite = regexp(fname,'(?<=_s)\d+','match');
-    regsite = str2double(regsite{1});
-    switch reg
-        case 'Cy5'
-            M{regsite,1} = strcat(fname,ext);
-            M{regsite,2} = pathstr;
-        case 'FITC'
-            M{regsite,3} = strcat(fname,ext);
-            M{regsite,4} = pathstr;
-        case 'DAPI'
-            M{regsite,5} = strcat(fname,ext);
-            M{regsite,6} = pathstr;
+for w=1:imageMetadata.numbers.howManyW
+    for s=1:imageMetadata.numbers.howManyS
+        if ~isempty(imageMetadata.filenames{s,w})
+            M{s,2*w-1} = imageMetadata.filenames{s,w};
+            M{s,2*w} = fullfile(path,'png');
+        end
     end
 end
+%%
+% Remove empty rows
 isemptyM = cellfun(@isempty,M(:,1));
 M(isemptyM,:) = [];
 M = vertcat(header,M);
-cd(startpath);
-fid=fopen('cpCSV.csv','w');
-csvFun = @(str)sprintf('%s,',str);
+%% Create the CSV file
+% The code below works, but does not seem to be the most elegant way of
+% making the file.
+fid=fopen(fullfile(path,'cpCSV.csv'),'w'); %create the file
+csvFun = @(str)sprintf('%s,',str); %create a function that adds a comma after an input string
 for i=1:size(M,1)
-xchar = cellfun(csvFun, M(i,:), 'UniformOutput', false);
-xchar = strcat(xchar{:});
-fprintf(fid,'%s\n',xchar(1:end-1));
+    xchar = cellfun(csvFun, M(i,:),'UniformOutput',false); %commas are added after each entry in a row
+    xchar = strcat(xchar{:}); %the separate entries are combined into a single string
+    fprintf(fid,'%s\r\n',xchar(1:end-1)); %this single string, which represents a row is added to the file. The last comma is left off
 end
 fclose(fid);
 end

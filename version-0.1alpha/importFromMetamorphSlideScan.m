@@ -253,7 +253,11 @@ for i = Sunique
     end
 end
 save(fullfile(outpath,'imageMetadata'),'imageMetadata');
+%%
+% Create a CSV file for use with Cell Profiler
+cpCSVmaker(outpath);
 %% Create or append a log file
 %
 fid = fopen(fullfile(outpath,'log.txt'),'a+');
 fprintf(fid,'%s: importFromMetamorphSlideScan: TIFF images from the folder ''%s'' were converted to PNG images, and along with metadata, added to the folder ''%s''.\r\n\r\n',date,inpath,outpath);
+fclose(fid);
