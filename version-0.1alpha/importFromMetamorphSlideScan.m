@@ -180,6 +180,8 @@ mkdir(pngpath);
 imageMetadata = struct;
 imageMetadata.numbers.howManyS = max(Sunique);
 imageMetadata.numbers.howManyW = max(Wunique);
+imageMetadata.numbers.howManyT = 1;
+imageMetadata.numbers.howManyZ = 1;
 imageMetadata.wavelengthInfo = vertcat(num2cell(Wunique),Wnames,Wexp);
 imageMetadata.wavelengthInfo = transpose(imageMetadata.wavelengthInfo);
 header = {'index','name','exposure (ms)'};
