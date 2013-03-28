@@ -55,15 +55,25 @@ function smfishgui_viewer1_OpeningFcn(hObject, eventdata, handles, varargin)
 % Choose default command line output for smfishgui_viewer1
 handles.output = hObject;
 
-% Update handles structure
-guidata(hObject, handles);
-
 % UIWAIT makes smfishgui_viewer1 wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
-handles.impath = 'C:\Users\kk128\Documents\MATLAB\fish\20120712_p21_66hr_12_w2Cy5_s1_t1_ff.TIF';
-IM = importZstackFromTIFF(handles.impath);
-imshow(IM(:,:,34),'Parent',handles.axes1,'DisplayRange',[]);
+
+% the |smfishgui_main| figure data is input into this figure and must be
+% retrieved.
+handles.main = [];
+
+mainInput = find(strcmp(varargin, 'main'));
+if ~isempty(mainInput)
+   handles.main = varargin{mainInput+1};
+end
+
+%handles.impath = 'C:\Users\kk128\Documents\MATLAB\fish\20120712_p21_66hr_12_w2Cy5_s1_t1_ff.TIF';
+%IM = importZstackFromTIFF(handles.impath);
+%imshow(IM(:,:,34),'Parent',handles.axes1,'DisplayRange',[]);
 disp('hi')
+
+% Update handles structure
+guidata(hObject, handles);
 
 % --- Outputs from this function are returned to the command line.
 function varargout = smfishgui_viewer1_OutputFcn(hObject, eventdata, handles) 
