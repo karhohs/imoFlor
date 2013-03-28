@@ -51,7 +51,7 @@
 % inside a |.mat| file.
 %
 %%% Other Notes
-% 
+%
 function [] = importFromMetamorphMDA4smfish(inpath,outpath)
 p = inputParser;
 p.addRequired('inpath', @(x) ischar(x));
@@ -65,8 +65,8 @@ warning('off','MATLAB:tifflib:libraryWarning');
 % data is not overwritten. This block of code is really overkill. It will
 % keep increasing the number on the end of the folder name until it finds a
 % number that doesn't yet exist.
- hwbar = waitbar(0, 'Preparing to import images...');
- set(hwbar, 'WindowStyle', 'modal');
+hwbar = waitbar(0, 'Preparing to import images...');
+set(hwbar, 'WindowStyle', 'modal');
 if ~isdir(outpath)
     mkdir(outpath);
 else
@@ -107,7 +107,7 @@ end
 %   FileNames(Time,Position,Channel);
 waitbar(0, hwbar, 'Organizing the filenames...');
 FileNames=cell(2048,256,16); %Assumes there will not be more than 2048 timepoints (over a week of images taken every 5 minutes), 256 positions, or more than 16 channels. If there are, change this number. It has been pre-allocated for speed.
-%% 
+%%
 % Collect the directory contents
 dirCon = dir(inpath);
 [S,T,W]=deal(zeros(length(dirCon),1));
@@ -192,7 +192,6 @@ hwbarcounter = 0;
 hwbarcountertotal = length(Sunique)*length(Wunique);
 for i = Sunique
     for j = Wunique
-        hwbarcounter = hwbarcounter + 1;
         waitbar(hwbarcounter/hwbarcountertotal, hwbar);
         for k = Tunique
             if ~isempty(FileNames{k,i,j}) %FileNames(Time,Position,Channel)
@@ -218,6 +217,7 @@ for i = Sunique
                 t.close;
             end
         end
+        hwbarcounter = hwbarcounter + 1;
     end
 end
 %% make the PNG images and metadata file
@@ -240,7 +240,6 @@ hwbarcounter = 0;
 hwbarcountertotal = length(Sunique)*length(Wunique);
 for i = Sunique
     for j = Wunique
-        hwbarcounter = hwbarcounter + 1;
         hwbarstr = sprintf('Importing files from stage %d and channel %s...',i,Wnames{j});
         waitbar(hwbarcounter/hwbarcountertotal, hwbar, hwbarstr);
         for k = Tunique
@@ -322,11 +321,12 @@ for i = Sunique
                 t.close;
             end
         end
+        hwbarcounter = hwbarcounter + 1;
     end
 end
 save(fullfile(outpath,'imageMetadata'),'imageMetadata');
 %% Create or append a log file
-% 
+%
 fid = fopen(fullfile(outpath,'log.txt'),'a+');
 fprintf(fid,'%s: importFromMetamorphMDA: TIFF images from the folder ''%s'' were converted to PNG images, and along with metadata, added to the folder ''%s''.\r\n\r\n',date,inpath,outpath);
 fclose(fid);
