@@ -5,7 +5,7 @@ if ~isempty(str)
 switch str
     case '.tif'
         hwbar = waitbar(0, 'Please wait... loading z-stack');
-        set(hwbar, 'WindowStyle', 'modal', 'CloseRequestFcn', '');
+        set(hwbar, 'WindowStyle', 'modal');
         info = imfinfo(path,'tif');
         s = [info(1).Height, info(1).Width, length(info)];
         IM = zeros(s);

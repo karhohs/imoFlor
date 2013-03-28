@@ -87,8 +87,15 @@ function pushbutton_path2FluorescenceImages_Callback(hObject, eventdata, handles
 % hObject    handle to pushbutton_path2FluorescenceImages (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+% Choose the path to the directory that contains the smFISH fluorescent
+% images
 handles.path2FluorescenceImages = uigetdir(handles.mfilepath,'Choose the directory that contains your fluorescence images.');
 set(handles.text_path2FluorescenceImages,'String',handles.path2FluorescenceImages);
+
+% Identify fluorescent images and show these as options in a drop down
+% menu.
+
 % Update handles structure
 guidata(hObject, handles);
 
