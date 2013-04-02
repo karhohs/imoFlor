@@ -22,16 +22,16 @@ function varargout = smfishgui_viewer1(varargin)
 
 % Edit the above text to modify the response to help smfishgui_viewer1
 
-% Last Modified by GUIDE v2.5 27-Mar-2013 16:35:42
+% Last Modified by GUIDE v2.5 29-Mar-2013 01:44:06
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
 gui_State = struct('gui_Name',       mfilename, ...
-                   'gui_Singleton',  gui_Singleton, ...
-                   'gui_OpeningFcn', @smfishgui_viewer1_OpeningFcn, ...
-                   'gui_OutputFcn',  @smfishgui_viewer1_OutputFcn, ...
-                   'gui_LayoutFcn',  [] , ...
-                   'gui_Callback',   []);
+    'gui_Singleton',  gui_Singleton, ...
+    'gui_OpeningFcn', @smfishgui_viewer1_OpeningFcn, ...
+    'gui_OutputFcn',  @smfishgui_viewer1_OutputFcn, ...
+    'gui_LayoutFcn',  [] , ...
+    'gui_Callback',   []);
 if nargin && ischar(varargin{1})
     gui_State.gui_Callback = str2func(varargin{1});
 end
@@ -64,19 +64,26 @@ handles.main = [];
 
 mainInput = find(strcmp(varargin, 'main'));
 if ~isempty(mainInput)
-   handles.main = varargin{mainInput+1};
+    handles.main = varargin{mainInput+1};
 end
+mainHandles = guidata(handles.main);
+imshow(mainHandles.IM(:,:,1),'Parent',handles.axes1,'DisplayRange',[]);
+imshow(mainHandles.IMzx,'Parent',handles.axes2,'DisplayRange',[]);
+axis(handles.axes2,'normal');
+set(handles.sliderZ,'Min',1);
+set(handles.sliderZ,'Max',mainHandles.IMsize(3));
+set(handles.sliderZ,'Value',1);
+handles.sliderZPreviousValue = 1;
+set(handles.sliderZ,'SliderStep',[1/mainHandles.IMsize(3), 5/mainHandles.IMsize(3)]);
 
-%handles.impath = 'C:\Users\kk128\Documents\MATLAB\fish\20120712_p21_66hr_12_w2Cy5_s1_t1_ff.TIF';
-%IM = importZstackFromTIFF(handles.impath);
-%imshow(IM(:,:,34),'Parent',handles.axes1,'DisplayRange',[]);
-disp('hi')
-
+% set up a listener, so that the slider has continuous updating
+hListener = handle.listener(handles.sliderZ,'ActionEvent', @sliderZ_Callback_Listener);
+setappdata(handles.sliderZ,'myListener',hListener);
 % Update handles structure
 guidata(hObject, handles);
 
 % --- Outputs from this function are returned to the command line.
-function varargout = smfishgui_viewer1_OutputFcn(hObject, eventdata, handles) 
+function varargout = smfishgui_viewer1_OutputFcn(hObject, eventdata, handles)
 % varargout  cell array for returning output args (see VARARGOUT);
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -112,6 +119,28 @@ function sliderZ_Callback(hObject, eventdata, handles)
 %        get(hObject,'Min') and get(hObject,'Max') to determine range of slider
 
 
+% --- Executes on slider movement continuously.
+function sliderZ_Callback_Listener(hObject, eventdata, handles)
+% hObject    handle to sliderZ (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'Value') returns position of slider
+%        get(hObject,'Min') and get(hObject,'Max') to determine range of slider
+handles = guidata(hObject);
+x = get(handles.sliderZ,'Value');
+x = round(x);
+if x ~= handles.sliderZPreviousValue
+    handles.sliderZPreviousValue = x;
+    set(handles.sliderZ,'Value',x);
+    mainHandles = guidata(handles.main);
+    imshow(mainHandles.IM(:,:,x),'Parent',handles.axes1,'DisplayRange',[]);
+end
+
+% Update handles structure
+guidata(hObject, handles);
+
+
 % --- Executes during object creation, after setting all properties.
 function sliderZ_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to sliderZ (see GCBO)
@@ -122,3 +151,11 @@ function sliderZ_CreateFcn(hObject, eventdata, handles)
 if isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor',[.9 .9 .9]);
 end
+
+
+% --- If Enable == 'on', executes on mouse press in 5 pixel border.
+% --- Otherwise, executes on mouse press in 5 pixel border or over sliderZ.
+function sliderZ_ButtonDownFcn(hObject, eventdata, handles)
+% hObject    handle to sliderZ (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)

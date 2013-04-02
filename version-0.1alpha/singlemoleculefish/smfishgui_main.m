@@ -22,7 +22,7 @@ function varargout = smfishgui_main(varargin)
 
 % Edit the above text to modify the response to help smfishgui_main
 
-% Last Modified by GUIDE v2.5 27-Mar-2013 20:20:19
+% Last Modified by GUIDE v2.5 29-Mar-2013 17:43:40
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -65,7 +65,7 @@ handles.output = hObject;
 
 % |smfishgui_main| is designed to be the parent gui. Communication between
 % the parent gui and the children gui happens below.
-handles.viewer1 = smfishgui_viewer1('main',hObject);
+%handles.viewer1 = smfishgui_viewer1('main',hObject);
 
 % Update handles structure
 guidata(hObject, handles);
@@ -82,30 +82,104 @@ function varargout = smfishgui_main_OutputFcn(hObject, eventdata, handles)
 varargout{1} = handles.output;
 
 
-% --- Executes on button press in pushbutton_path2FluorescenceImages.
-function pushbutton_path2FluorescenceImages_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton_path2FluorescenceImages (see GCBO)
+% --- Executes on button press in pushbutton_path.
+function pushbutton_path_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_path (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
 % Choose the path to the directory that contains the smFISH fluorescent
 % images
-handles.path2FluorescenceImages = uigetdir(handles.mfilepath,'Choose the directory that contains your fluorescence images.');
-set(handles.text_path2FluorescenceImages,'String',handles.path2FluorescenceImages);
+handles.path = uigetdir(handles.mfilepath,'Choose the directory that contains your fluorescence images.');
+set(handles.text_path,'String',handles.path);
 
-% Identify fluorescent images and show these as options in a drop down
-% menu.
+% Import the metadata created by |importFromMetamorphMDA4smfish.m|
+load(fullfile(handles.path,'imageMetadata.mat'));
+handles.imageMetadata = imageMetadata;
+
+% Identify image info and show these as options in a listbox menu.
+set(handles.listbox_wavelengths,'String',handles.imageMetadata.wavelengthInfo(2:end,2));
+stageposnumbers = cell(length(handles.imageMetadata.stagePosition.numbers),1);
+for i=1:length(stageposnumbers)
+    stageposnumbers{i} = sprintf('pos %d',handles.imageMetadata.stagePosition.numbers(i));
+end
+set(handles.listbox_positions,'String',stageposnumbers);
 
 % Update handles structure
 guidata(hObject, handles);
 
-
-% --- Executes on button press in pushbutton_path2BrightfieldImages.
-function pushbutton_path2BrightfieldImages_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton_path2BrightfieldImages (see GCBO)
+% --- Executes on selection change in listbox_positions.
+function listbox_positions_Callback(hObject, eventdata, handles)
+% hObject    handle to listbox_positions (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-handles.path2BrightfieldImages = uigetdir(handles.mfilepath,'Choose the directory that contains your Phase/DIC/Brightfield images.');
-set(handles.text_path2BrightfieldImages,'String',handles.path2BrightfieldImages);
+
+% Hints: contents = cellstr(get(hObject,'String')) returns listbox_positions contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from listbox_positions
+
+
+% --- Executes during object creation, after setting all properties.
+function listbox_positions_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to listbox_positions (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: listbox controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on selection change in listbox_wavelengths.
+function listbox_wavelengths_Callback(hObject, eventdata, handles)
+% hObject    handle to listbox_wavelengths (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns listbox_wavelengths contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from listbox_wavelengths
+
+
+% --- Executes during object creation, after setting all properties.
+function listbox_wavelengths_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to listbox_wavelengths (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: listbox controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in pushbutton_analyze.
+function pushbutton_analyze_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_analyze (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+if ~isfield(handles,'imageMetadata')
+    msgboxmsg = sprintf('Please use a valid path.');
+    msgboxtitle = 'Cannot find image info';
+    msgbox(msgboxmsg,msgboxtitle);
+else
+    s = get(handles.listbox_positions,'Value');
+    w = get(handles.listbox_wavelengths,'Value');
+    [handles.IM,handles.IMsize] = importZstackFromPNG(handles.imageMetadata,s,w,handles.path);
+    handles.IMzx = maxprojectZX(handles.IM);
+    % Update handles structure
+    guidata(hObject, handles);
+    % update the viewer1 window
+    handles.viewer1 = smfishgui_viewer1('main',hObject);
+end
+
 % Update handles structure
 guidata(hObject, handles);
+
+
+% --- Executes during object creation, after setting all properties.
+function figure1_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to figure1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called

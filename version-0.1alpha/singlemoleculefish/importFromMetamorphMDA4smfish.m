@@ -236,6 +236,7 @@ imageMetadata.timeOfAcquisition = cell(size(imageMetadata.filenames)); %Units ar
 imageMetadata.stagePosition.x = zeros(imageMetadata.numbers.howManyS,1);
 imageMetadata.stagePosition.y = zeros(imageMetadata.numbers.howManyS,1);
 imageMetadata.stagePosition.z = zeros(imageMetadata.numbers.howManyZ,1);
+imageMetadata.stagePosition.numbers = Sunique;
 hwbarcounter = 0;
 hwbarcountertotal = length(Sunique)*length(Wunique);
 for i = Sunique
