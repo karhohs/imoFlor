@@ -1,0 +1,170 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>cpGrowthCurve</title><meta name="generator" content="MATLAB 8.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2013-05-20"><meta name="DC.source" content="cpGrowthCurve.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, tt, code { font-size:12px; }
+pre { margin:0px 0px 20px; }
+pre.error { color:red; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>cpGrowthCurve</h1><!--introduction--><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Inputs</a></li><li><a href="#2">Outputs</a></li><li><a href="#3">Parse input</a></li><li><a href="#4">boxplot</a></li></ul></div><h2>Inputs<a name="1"></a></h2><div><ul><li><tt>data</tt>, a required variable. <tt>data</tt> is a cell array containing time series data. In each position of the cell array resides a column vector. There is a row for each image in the column vector and the number in each row represents the number of cells segmented in that image.</li><li><tt>outpath</tt>, the directory where image files will be saved. By default this is the user's home in the MATLAB&reg; path.</li></ul></div><h2>Outputs<a name="2"></a></h2><div><ul><li><tt>figh</tt>, a struct containing the figure handles for each plot created by this function. This output is useful for tweaking these plots after the function call.</li></ul></div><pre class="codeinput"><span class="keyword">function</span> [figh] = cpGrowthCurve(data,varargin)
+</pre><h2>Parse input<a name="3"></a></h2><p>The inputs into the function are parsed. If there were no inputs when the function was called a set of demonstrative data is imported and processed; this is useful and necessary for MATLAB-publishing this file.</p><pre class="codeinput"><span class="keyword">if</span> nargin == 0
+    data = loadDemoData(<span class="string">'cpGrowthCurve'</span>);
+<span class="keyword">end</span>
+defaultOutpath = userpath;
+p = inputParser;
+addRequired(p,<span class="string">'data'</span>,@iscell);
+addParamValue(p,<span class="string">'outpath'</span>,defaultOutpath,@isdir);
+parse(p,data,varargin{:});
+
+<span class="keyword">if</span> nargin == 0
+    [mfilepath,~,~] = fileparts(mfilename(<span class="string">'fullpath'</span>)); <span class="comment">%finds the path to this script</span>
+    outpath = fullfile(mfilepath,<span class="string">'html'</span>);
+<span class="keyword">else</span>
+    outpath = p.Results.outpath;
+<span class="keyword">end</span>
+<span class="keyword">if</span> ~isdir(outpath)
+    mkdir(outpath);
+<span class="keyword">end</span>
+</pre><h2>boxplot<a name="4"></a></h2><pre class="codeinput">numImages = cellfun(@length,data);
+maxNumImages = max(numImages);
+myBoxPlotData = NaN(maxNumImages,length(data));
+<span class="keyword">for</span> i = 1:length(data)
+    myBoxPlotData(1:numImages(i),i) = data{i};
+<span class="keyword">end</span>
+boxplot(myBoxPlotData,<span class="string">'notch'</span>,<span class="string">'on'</span>);
+figh.boxplot = gcf;
+str = sprintf(<span class="string">'cell density\n(nuclei per image)'</span>);
+ylabel(str);
+set(figh.boxplot,<span class="string">'PaperSize'</span>,[7 4]);
+set(figh.boxplot,<span class="string">'PaperUnits'</span>,<span class="string">'inches'</span>,<span class="string">'PaperPosition'</span>,[0 0 6.4 3.6]);
+rez=150; <span class="comment">%resolution (dpi) of final graphic</span>
+print(figh.boxplot,fullfile(outpath,<span class="string">'cpGrowthCurve_boxplot.png'</span>),<span class="string">'-dpng'</span>,[<span class="string">'-r'</span>,num2str(rez)],<span class="string">'-opengl'</span>); <span class="comment">%save file</span>
+print(figh.boxplot,fullfile(outpath,<span class="string">'cpGrowthCurve_boxplot.pdf'</span>),<span class="string">'-dpdf'</span>);
+</pre><img vspace="5" hspace="5" src="cpGrowthCurve_01.png" alt=""> <pre class="codeinput">meancelldensity = cellfun(@mean,data)./cellfun(@length,data);
+</pre><pre class="codeoutput">
+ans = 
+
+    boxplot: 173.0024
+
+</pre><p><img vspace="5" hspace="5" src="cpGrowthCurve_boxplot.png" alt=""> </p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2013a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% cpGrowthCurve
+%
+%% Inputs
+% * |data|, a required variable. |data| is a cell array containing time
+% series data. In each position of the cell array resides a column vector.
+% There is a row for each image in the column vector and the number in each
+% row represents the number of cells segmented in that image.
+% * |outpath|, the directory where image files will be saved. By default
+% this is the user's home in the MATLAB(R) path.
+%%% Outputs
+% * |figh|, a struct containing the figure handles for each plot created by
+% this function. This output is useful for tweaking these plots after the
+% function call.
+function [figh] = cpGrowthCurve(data,varargin)
+%% Parse input
+% The inputs into the function are parsed. If there were no inputs when the
+% function was called a set of demonstrative data is imported and
+% processed; this is useful and necessary for MATLAB-publishing this file.
+if nargin == 0
+    data = loadDemoData('cpGrowthCurve');
+end
+defaultOutpath = userpath;
+p = inputParser;
+addRequired(p,'data',@iscell);
+addParamValue(p,'outpath',defaultOutpath,@isdir);
+parse(p,data,varargin{:});
+
+if nargin == 0
+    [mfilepath,~,~] = fileparts(mfilename('fullpath')); %finds the path to this script
+    outpath = fullfile(mfilepath,'html');
+else
+    outpath = p.Results.outpath;
+end
+if ~isdir(outpath)
+    mkdir(outpath);
+end
+%% boxplot
+numImages = cellfun(@length,data);
+maxNumImages = max(numImages);
+myBoxPlotData = NaN(maxNumImages,length(data));
+for i = 1:length(data)
+    myBoxPlotData(1:numImages(i),i) = data{i};
+end
+boxplot(myBoxPlotData,'notch','on');
+figh.boxplot = gcf;
+str = sprintf('cell density\n(nuclei per image)');
+ylabel(str);
+set(figh.boxplot,'PaperSize',[7 4]);
+set(figh.boxplot,'PaperUnits','inches','PaperPosition',[0 0 6.4 3.6]);
+rez=150; %resolution (dpi) of final graphic
+print(figh.boxplot,fullfile(outpath,'cpGrowthCurve_boxplot.png'),'-dpng',['-r',num2str(rez)],'-opengl'); %save file 
+print(figh.boxplot,fullfile(outpath,'cpGrowthCurve_boxplot.pdf'),'-dpdf');
+%%
+meancelldensity = cellfun(@mean,data)./cellfun(@length,data);
+%%
+%
+% <<cpGrowthCurve_boxplot.png>>
+%
+
+##### SOURCE END #####
+--></body></html>
