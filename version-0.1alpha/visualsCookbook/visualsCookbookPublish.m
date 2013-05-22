@@ -4,7 +4,7 @@ datapath = fullfile(mfilepath,'demo_data');
         myfiles = {'DefaultOUT_Nuclei_1.csv','DefaultOUT_Nuclei_2.csv','DefaultOUT_Nuclei_3.csv'};
         alldata = cell(1,length(myfiles));
         for i = 1:length(myfiles)
-            alldata{i} = dataset('XLSFile',fullfile(datapath,myfiles{i}));
+            alldata{i} = dataset('File',fullfile(datapath,myfiles{i}),'Delimiter',',');
         end
 
 
