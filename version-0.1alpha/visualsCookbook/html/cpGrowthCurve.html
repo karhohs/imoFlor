@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>cpGrowthCurve</title><meta name="generator" content="MATLAB 8.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2013-05-20"><meta name="DC.source" content="cpGrowthCurve.m"><style type="text/css">
+      --><title>cpGrowthCurve</title><meta name="generator" content="MATLAB 8.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2013-05-22"><meta name="DC.source" content="cpGrowthCurve.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -65,22 +65,15 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>cpGrowthCurve</h1><!--introduction--><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Inputs</a></li><li><a href="#2">Outputs</a></li><li><a href="#3">Parse input</a></li><li><a href="#4">boxplot</a></li></ul></div><h2>Inputs<a name="1"></a></h2><div><ul><li><tt>data</tt>, a required variable. <tt>data</tt> is a cell array containing time series data. In each position of the cell array resides a column vector. There is a row for each image in the column vector and the number in each row represents the number of cells segmented in that image.</li><li><tt>outpath</tt>, the directory where image files will be saved. By default this is the user's home in the MATLAB&reg; path.</li></ul></div><h2>Outputs<a name="2"></a></h2><div><ul><li><tt>figh</tt>, a struct containing the figure handles for each plot created by this function. This output is useful for tweaking these plots after the function call.</li></ul></div><pre class="codeinput"><span class="keyword">function</span> [figh] = cpGrowthCurve(data,varargin)
-</pre><h2>Parse input<a name="3"></a></h2><p>The inputs into the function are parsed. If there were no inputs when the function was called a set of demonstrative data is imported and processed; this is useful and necessary for MATLAB-publishing this file.</p><pre class="codeinput"><span class="keyword">if</span> nargin == 0
-    data = loadDemoData(<span class="string">'cpGrowthCurve'</span>);
-<span class="keyword">end</span>
-defaultOutpath = userpath;
+  </style></head><body><div class="content"><h1>cpGrowthCurve</h1><!--introduction--><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Inputs</a></li><li><a href="#2">Outputs</a></li><li><a href="#3">Parse input</a></li><li><a href="#4">boxplot</a></li><li><a href="#6">Create a simple webpage to conveniently view the data</a></li></ul></div><h2>Inputs<a name="1"></a></h2><div><ul><li><tt>data</tt>, a required variable. <tt>data</tt> is a cell array containing time series data. In each position of the cell array resides a column vector. There is a row for each image in the column vector and the number in each row represents the number of cells segmented in that image.</li><li><tt>outpath</tt>, the directory where image files will be saved. By default this is the user's home in the MATLAB&reg; path.</li><li><tt>report</tt>, a boolean variable to indicate if a report should be generated. By default this is <tt>false</tt>.</li></ul></div><h2>Outputs<a name="2"></a></h2><div><ul><li><tt>figh</tt>, a struct containing the figure handles for each plot created by this function. This output is useful for tweaking these plots after the function call.</li></ul></div><pre class="codeinput"><span class="keyword">function</span> [figh] = cpGrowthCurve(data,varargin)
+</pre><h2>Parse input<a name="3"></a></h2><p>The inputs into the function are parsed.</p><pre class="codeinput">defaultOutpath = userpath;
 p = inputParser;
 addRequired(p,<span class="string">'data'</span>,@iscell);
-addParamValue(p,<span class="string">'outpath'</span>,defaultOutpath,@isdir);
+addParamValue(p,<span class="string">'outpath'</span>,defaultOutpath,@isstr);
+addParamValue(p,<span class="string">'report'</span>,false,@islogical);
 parse(p,data,varargin{:});
 
-<span class="keyword">if</span> nargin == 0
-    [mfilepath,~,~] = fileparts(mfilename(<span class="string">'fullpath'</span>)); <span class="comment">%finds the path to this script</span>
-    outpath = fullfile(mfilepath,<span class="string">'html'</span>);
-<span class="keyword">else</span>
-    outpath = p.Results.outpath;
-<span class="keyword">end</span>
+outpath = p.Results.outpath;
 <span class="keyword">if</span> ~isdir(outpath)
     mkdir(outpath);
 <span class="keyword">end</span>
@@ -91,21 +84,16 @@ myBoxPlotData = NaN(maxNumImages,length(data));
     myBoxPlotData(1:numImages(i),i) = data{i};
 <span class="keyword">end</span>
 boxplot(myBoxPlotData,<span class="string">'notch'</span>,<span class="string">'on'</span>);
-figh.boxplot = gcf;
+figh{1} = gcf;
 str = sprintf(<span class="string">'cell density\n(nuclei per image)'</span>);
 ylabel(str);
-set(figh.boxplot,<span class="string">'PaperSize'</span>,[7 4]);
-set(figh.boxplot,<span class="string">'PaperUnits'</span>,<span class="string">'inches'</span>,<span class="string">'PaperPosition'</span>,[0 0 6.4 3.6]);
-rez=150; <span class="comment">%resolution (dpi) of final graphic</span>
-print(figh.boxplot,fullfile(outpath,<span class="string">'cpGrowthCurve_boxplot.png'</span>),<span class="string">'-dpng'</span>,[<span class="string">'-r'</span>,num2str(rez)],<span class="string">'-opengl'</span>); <span class="comment">%save file</span>
-print(figh.boxplot,fullfile(outpath,<span class="string">'cpGrowthCurve_boxplot.pdf'</span>),<span class="string">'-dpdf'</span>);
 </pre><img vspace="5" hspace="5" src="cpGrowthCurve_01.png" alt=""> <pre class="codeinput">meancelldensity = cellfun(@mean,data)./cellfun(@length,data);
-</pre><pre class="codeoutput">
-ans = 
-
-    boxplot: 173.0024
-
-</pre><p><img vspace="5" hspace="5" src="cpGrowthCurve_boxplot.png" alt=""> </p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2013a</a><br></p></div><!--
+</pre><h2>Create a simple webpage to conveniently view the data<a name="6"></a></h2><pre class="codeinput"><span class="keyword">if</span> p.Results.report
+    imagenames = {<span class="string">'cpGrowthCurve_boxplot'</span>};
+    htmlname = fullfile(outpath,<span class="string">'cpGrowthCurve_output.html'</span>);
+    generateReport(figh,imagenames,outpath,htmlname);
+<span class="keyword">end</span>
+</pre><img vspace="5" hspace="5" src="cpGrowthCurve_02.png" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2013a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% cpGrowthCurve
 %
@@ -116,30 +104,23 @@ ans =
 % row represents the number of cells segmented in that image.
 % * |outpath|, the directory where image files will be saved. By default
 % this is the user's home in the MATLAB(R) path.
+% * |report|, a boolean variable to indicate if a report should be
+% generated. By default this is |false|.
 %%% Outputs
 % * |figh|, a struct containing the figure handles for each plot created by
 % this function. This output is useful for tweaking these plots after the
 % function call.
 function [figh] = cpGrowthCurve(data,varargin)
 %% Parse input
-% The inputs into the function are parsed. If there were no inputs when the
-% function was called a set of demonstrative data is imported and
-% processed; this is useful and necessary for MATLAB-publishing this file.
-if nargin == 0
-    data = loadDemoData('cpGrowthCurve');
-end
+% The inputs into the function are parsed.
 defaultOutpath = userpath;
 p = inputParser;
 addRequired(p,'data',@iscell);
-addParamValue(p,'outpath',defaultOutpath,@isdir);
+addParamValue(p,'outpath',defaultOutpath,@isstr);
+addParamValue(p,'report',false,@islogical);
 parse(p,data,varargin{:});
 
-if nargin == 0
-    [mfilepath,~,~] = fileparts(mfilename('fullpath')); %finds the path to this script
-    outpath = fullfile(mfilepath,'html');
-else
-    outpath = p.Results.outpath;
-end
+outpath = p.Results.outpath;
 if ~isdir(outpath)
     mkdir(outpath);
 end
@@ -151,20 +132,17 @@ for i = 1:length(data)
     myBoxPlotData(1:numImages(i),i) = data{i};
 end
 boxplot(myBoxPlotData,'notch','on');
-figh.boxplot = gcf;
+figh{1} = gcf;
 str = sprintf('cell density\n(nuclei per image)');
 ylabel(str);
-set(figh.boxplot,'PaperSize',[7 4]);
-set(figh.boxplot,'PaperUnits','inches','PaperPosition',[0 0 6.4 3.6]);
-rez=150; %resolution (dpi) of final graphic
-print(figh.boxplot,fullfile(outpath,'cpGrowthCurve_boxplot.png'),'-dpng',['-r',num2str(rez)],'-opengl'); %save file 
-print(figh.boxplot,fullfile(outpath,'cpGrowthCurve_boxplot.pdf'),'-dpdf');
 %%
 meancelldensity = cellfun(@mean,data)./cellfun(@length,data);
-%%
-%
-% <<cpGrowthCurve_boxplot.png>>
-%
+%% Create a simple webpage to conveniently view the data
+if p.Results.report
+    imagenames = {'cpGrowthCurve_boxplot'};
+    htmlname = fullfile(outpath,'cpGrowthCurve_output.html');
+    generateReport(figh,imagenames,outpath,htmlname);
+end
 
 ##### SOURCE END #####
 --></body></html>
