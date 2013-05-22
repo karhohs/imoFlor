@@ -43,7 +43,7 @@ switch p.Results.aspectRatio
     case 3
         %square
         PaperSize = [8.5 11];
-        PaperPosition = [0.25 1.5 8 8];
+        PaperPosition = [1.25 2.5 6 6];
     case 4
         %3:2
         PaperSize = [8.5 11];
