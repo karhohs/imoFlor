@@ -43,7 +43,7 @@ switch p.Results.aspectRatio
     case 3
         %square
         PaperSize = [8.5 11];
-        PaperPosition = [1.25 2.5 6 6];
+        PaperPosition = [1.25 2.5 8 8];
     case 4
         %3:2
         PaperSize = [8.5 11];
@@ -53,8 +53,12 @@ end
 for i=1:length(figh)
     set(figh{i},'PaperSize',PaperSize);
     set(figh{i},'PaperUnits','inches','PaperPosition',PaperPosition);
+    fighaxes = findall(figh{i},'type','axes');
+    set(fighaxes,'FontSize',20,'fontWeight','bold','FontName','Helvetica','box','off');
+    set(findall(figh{i},'type','text'),'FontSize',20,'fontWeight','bold','FontName','Helvetica');
     print(figh{i},fullfile(outpath,imagenames{i}),'-dpng',['-r',num2str(p.Results.rez)],'-opengl') %save file
     print(figh{i},fullfile(outpath,imagenames{i}),'-dpdf');
+    set(figh{i},'Position',[1 1 PaperPosition(3)*p.Results.rez PaperPosition(4)*p.Results.rez]);
 end
 
 imagenamespng = cell(size(p.Results.imagenames));
