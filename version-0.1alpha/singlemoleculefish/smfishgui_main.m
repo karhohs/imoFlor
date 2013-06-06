@@ -22,7 +22,7 @@ function varargout = smfishgui_main(varargin)
 
 % Edit the above text to modify the response to help smfishgui_main
 
-% Last Modified by GUIDE v2.5 29-Mar-2013 17:43:40
+% Last Modified by GUIDE v2.5 05-Apr-2013 21:30:24
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -183,3 +183,14 @@ function figure1_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to figure1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
+
+
+% --- Executes during object creation, after setting all properties.
+function pushbutton_path_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to pushbutton_path (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+set(hObject,'String','<html>Load Previous Session<br>or Start New Session');
+
+% Update handles structure
+guidata(hObject, handles);

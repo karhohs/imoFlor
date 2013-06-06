@@ -13,6 +13,19 @@ alldata = cell(1,length(myfiles));
 for i = 1:length(myfiles)
     alldata{i} = dataset('File',fullfile(datapath,myfiles{i}),'Delimiter',',');
 end
+%% cpCDF
+%
+myfiles = {'DefaultOUT_Nuclei_1.csv','DefaultOUT_Nuclei_2.csv','DefaultOUT_Nuclei_3.csv'};
+data = cell(1,3*length(myfiles));
+for i = 1:length(myfiles)
+    mydata = alldata{i};
+    data{i} = mydata.Intensity_MeanIntensity_TexasRed;
+end
+cpCDF(data,'outpath',outpath,'report',true);
+clear('options_doc');
+options_doc.codeToEvaluate = 'cpCDF(data,''outpath'',outpath,''report'',true)';
+options_doc.maxOutputLines = 0;
+publish(fullfile(mfilepath,'cpCDF.m'),options_doc);
 %% cpHistogram
 %
 myfiles = {'DefaultOUT_Nuclei_1.csv','DefaultOUT_Nuclei_2.csv','DefaultOUT_Nuclei_3.csv'};
