@@ -126,9 +126,9 @@ Wunique = Wunique(Wunique~=0);
 %%
 % Remove the bird's eye view image from the file name list, assuming that
 % this is the last position.
-maxS = max(Sunique);
-[FileNames{maxS,:}] = deal([]);
-Sunique(Sunique==maxS) = [];
+%maxS = max(Sunique);
+%[FileNames{maxS,:}] = deal([]);
+%Sunique(Sunique==maxS) = [];
 %%
 % *Find the names of the wavelengths*
 %
