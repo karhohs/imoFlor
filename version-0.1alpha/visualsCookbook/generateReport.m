@@ -4,8 +4,8 @@
 % * |figh|, a required variable. |data| is a cell array containing time
 % series data. In each position of the cell array resides a column vector.
 % There is a row for every cell measurement in the column vector.
-% * |imagenames|, the number of bins within a histogram or if this is an array,
-% the centers of histogram boxes. The default value is 100.
+% * |imagenames|, the number of bins within a histogram or if this is an
+% array, the centers of histogram boxes. The default value is 100.
 % * |outpath|, the directory where image files will be saved. By default
 % this is the user's home in the MATLAB(R) path.
 % * |report|, a boolean variable to indicate if a report should be
@@ -23,41 +23,17 @@ function [] = generateReport(figh,imagenames,outpath,htmlname,varargin)
 p = inputParser;
 addRequired(p,'figh',@iscell);
 addRequired(p,'imagenames',@(x) length(x)==length(figh));
-addRequired(p,'outpath',@isstr);
-addRequired(p,'htmlname',@isstr);
-addParamValue(p,'rez',120,@(x) mod(x,1)==0); %resolution (dpi) of final graphic
-addParamValue(p,'aspectRatio',1,@(x) any(x==[1,2,3,4]));
+addRequired(p,'outpath',@ischar);
+addRequired(p,'htmlname',@ischar);
+addParamValue(p,'rez',300,@(x) mod(x,1)==0); %resolution (dpi) of final graphic
 parse(p,figh,imagenames,outpath,htmlname,varargin{:});
 if ~isdir(outpath)
     mkdir(outpath);
 end
-switch p.Results.aspectRatio
-    case 1
-        %16:9
-        PaperSize = [8.5 11];
-        PaperPosition = [0.25 3.25 8 4.5];
-    case 2
-        %4:3
-        PaperSize = [8.5 11];
-        PaperPosition = [0.25 2.5 8 6];
-    case 3
-        %square
-        PaperSize = [8.5 11];
-        PaperPosition = [1.25 2.5 8 8];
-    case 4
-        %3:2
-        PaperSize = [8.5 11];
-        PaperPosition = [0.5 3 7.5 5];
-end
 %% Save image files
 for i=1:length(figh)
-    set(figh{i},'PaperSize',PaperSize);
-    set(figh{i},'PaperUnits','inches','PaperPosition',PaperPosition);
-    fighaxes = findall(figh{i},'type','axes');
-    set(fighaxes,'FontSize',20,'fontWeight','bold','FontName','Helvetica','box','off');
-    set(findall(figh{i},'type','text'),'FontSize',20,'fontWeight','bold','FontName','Helvetica');
     print(figh{i},fullfile(outpath,imagenames{i}),'-dpng',['-r',num2str(p.Results.rez)],'-opengl') %save file
-    print(figh{i},fullfile(outpath,imagenames{i}),'-dpdf');
+    print(figh{i},fullfile(outpath,imagenames{i}),'-dpdf','-r0');
     set(figh{i},'Position',[1 1 PaperPosition(3)*p.Results.rez PaperPosition(4)*p.Results.rez]);
 end
 
