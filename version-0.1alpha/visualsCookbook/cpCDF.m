@@ -22,11 +22,14 @@ function [figh] = cpCDF(data,varargin)
 % function was called a set of demonstrative data is imported and
 % processed; this is useful and necessary for MATLAB-publishing this file.
 defaultOutpath = userpath;
+defaultTitles = num2cell(1:length(data));
+defaultTitles = cellfun(@num2str,defaultTitles,'UniformOutput', false);
 
 p = inputParser;
 addRequired(p,'data',@iscell);
 addParamValue(p,'outpath',defaultOutpath,@isstr);
 addParamValue(p,'report',false,@islogical);
+addParamValue(p,'titles',defaultTitles,@(x) length(x)==length(data));
 parse(p,data,varargin{:});
 %% CDF
 figh = cell(length(data),1); %initialize struct for speedy memory access
@@ -41,15 +44,16 @@ for i=1:length(data)
     plot(x,y,'r--');
     str = sprintf('probability a cell has <= x');
     ylabel(str);
-    [h,p] = kstest(data{i},'CDF',pd)
+    [h,p2] = kstest(data{i},'CDF',pd);
     hold off;
 end
+resizeFig4Publication(figh,'16:9');
 %% Create a simple webpage to conveniently view the data
 if p.Results.report
     imagenames = cell(size(p.Results.titles));
     for i=1:length(p.Results.titles)
         imagenames{i} = sprintf('cpCDF_%s',p.Results.titles{i});
     end
-    htmlname = fullfile(outpath,'cpCDF_output.html');
-    generateReport(figh,imagenames,outpath,htmlname);
+    htmlname = fullfile(p.Results.outpath,'cpCDF_output.html');
+    generateReport(figh,imagenames,p.Results.outpath,htmlname);
 end

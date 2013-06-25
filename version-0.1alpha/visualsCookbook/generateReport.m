@@ -21,12 +21,19 @@ function [] = generateReport(figh,imagenames,outpath,htmlname,varargin)
 % function was called a set of demonstrative data is imported and
 % processed; this is useful and necessary for MATLAB-publishing this file.
 p = inputParser;
-addRequired(p,'figh',@iscell);
+addRequired(p,'figh',@(x) iscell(x)||(strcmp('figure',get(x,'type'))));
 addRequired(p,'imagenames',@(x) length(x)==length(figh));
 addRequired(p,'outpath',@ischar);
 addRequired(p,'htmlname',@ischar);
 addParamValue(p,'rez',300,@(x) mod(x,1)==0); %resolution (dpi) of final graphic
 parse(p,figh,imagenames,outpath,htmlname,varargin{:});
+if ~iscell(figh)
+    myfigh = figh;
+    figh = cell(1,1);
+    figh{1} = myfigh;
+elseif any(cellfun(@(x) ~strcmp('figure',get(x,'type')),figh))  
+    error('reszFig4Pub:argChk','The cell array of figure handles holds an object that is not a figure handle.');
+end
 if ~isdir(outpath)
     mkdir(outpath);
 end

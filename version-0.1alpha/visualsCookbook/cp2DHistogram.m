@@ -51,13 +51,14 @@ for i=1:length(datax)
     jet1 = colormap(jet);
     jet1(1,:) = 1;
     colormap(jet1);
-    axis square;
+    %axis square;
     xlabel('integrated DAPI signal');
     ylabel('mean p53 signal');
     title(p.Results.titles{i});
     %rho = corr(datax{i},datay{i});
     %str = sprintf('corr = %f',rho);
 end
+resizeFig4Publication(figh,'16:9');
 %% Create a simple webpage to conveniently view the data
 if p.Results.report
     imagenames = cell(size(p.Results.titles));
@@ -65,5 +66,5 @@ if p.Results.report
         imagenames{i} = sprintf('cp2DHistogram_%s',p.Results.titles{i});
     end
     htmlname = fullfile(p.Results.outpath,'cp2DHistogram_output.html');
-    generateReport(figh,imagenames,p.Results.outpath,htmlname,'aspectRatio',3);
+    generateReport(figh,imagenames,p.Results.outpath,htmlname);
 end

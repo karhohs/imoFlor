@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>cp2DHistogram</title><meta name="generator" content="MATLAB 8.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2013-06-25"><meta name="DC.source" content="cp2DHistogram.m"><style type="text/css">
+      --><title>cpCDF</title><meta name="generator" content="MATLAB 8.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2013-06-25"><meta name="DC.source" content="cpCDF.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -65,55 +65,44 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>cp2DHistogram</h1><!--introduction--><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Inputs</a></li><li><a href="#2">Outputs</a></li><li><a href="#3">Parse input</a></li><li><a href="#4">2DHistogram</a></li><li><a href="#5">Create a simple webpage to conveniently view the data</a></li></ul></div><h2>Inputs<a name="1"></a></h2><div><ul><li><tt>data</tt>, a required variable. <tt>data</tt> is a cell array containing time series data. In each position of the cell array resides a column vector. There is a row for every cell measurement in the column vector.</li><li><tt>nbins</tt>, the number of bins within a histogram or if this is an array, the centers of histogram boxes. The default value is 100.</li><li><tt>outpath</tt>, the directory where image files will be saved. By default this is the user's home in the MATLAB&reg; path.</li><li><tt>report</tt>, a boolean variable to indicate if a report should be generated. By default this is <tt>false</tt>.</li><li><tt>titles</tt>, the titles that will be placed above each figure. There must be a title for each column vector in the <tt>data</tt> cell array.</li></ul></div><h2>Outputs<a name="2"></a></h2><div><ul><li><tt>figh</tt>, a struct containing the figure handles for each plot created by this function. This output is useful for tweaking these plots after the function call.</li></ul></div><pre class="codeinput"><span class="keyword">function</span> [figh] = cp2DHistogram(datax,datay,varargin)
+  </style></head><body><div class="content"><h1>cpCDF</h1><!--introduction--><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Inputs</a></li><li><a href="#2">Outputs</a></li><li><a href="#3">Parse input</a></li><li><a href="#4">CDF</a></li><li><a href="#5">Create a simple webpage to conveniently view the data</a></li></ul></div><h2>Inputs<a name="1"></a></h2><div><ul><li><tt>data</tt>, a required variable. <tt>data</tt> is a cell array containing time series data. In each position of the cell array resides a column vector. There is a row for every cell measurement in the column vector.</li><li><tt>nbins</tt>, the number of bins within a histogram or if this is an array, the centers of histogram boxes. The default value is 100.</li><li><tt>outpath</tt>, the directory where image files will be saved. By default this is the user's home in the MATLAB&reg; path.</li><li><tt>report</tt>, a boolean variable to indicate if a report should be generated. By default this is <tt>false</tt>.</li><li><tt>titles</tt>, the titles that will be placed above each figure. There must be a title for each column vector in the <tt>data</tt> cell array.</li></ul></div><h2>Outputs<a name="2"></a></h2><div><ul><li><tt>figh</tt>, a struct containing the figure handles for each plot created by this function. This output is useful for tweaking these plots after the function call.</li></ul></div><pre class="codeinput"><span class="keyword">function</span> [figh] = cpCDF(data,varargin)
 </pre><h2>Parse input<a name="3"></a></h2><p>The inputs into the function are parsed. If there were no inputs when the function was called a set of demonstrative data is imported and processed; this is useful and necessary for MATLAB-publishing this file.</p><pre class="codeinput">defaultOutpath = userpath;
-defaultNbins = 100;
-defaultTitles = num2cell(1:length(datax));
+defaultTitles = num2cell(1:length(data));
 defaultTitles = cellfun(@num2str,defaultTitles,<span class="string">'UniformOutput'</span>, false);
 
 p = inputParser;
-addRequired(p,<span class="string">'datax'</span>,@iscell);
-addRequired(p,<span class="string">'datay'</span>,@iscell);
-addParamValue(p,<span class="string">'nbins'</span>,defaultNbins,@isinteger);
+addRequired(p,<span class="string">'data'</span>,@iscell);
 addParamValue(p,<span class="string">'outpath'</span>,defaultOutpath,@isstr);
 addParamValue(p,<span class="string">'report'</span>,false,@islogical);
 addParamValue(p,<span class="string">'titles'</span>,defaultTitles,@(x) length(x)==length(data));
-
-<span class="keyword">if</span> length(datax)~=length(datay)
-    error(<span class="string">'not:good'</span>,<span class="string">'the input data are not of the same length'</span>);
-<span class="keyword">end</span>
-parse(p,datax,datay,varargin{:});
-</pre><h2>2DHistogram<a name="4"></a></h2><pre class="codeinput">figh = cell(length(datax),1); <span class="comment">%initialize struct for speedy memory access</span>
-<span class="keyword">for</span> i=1:length(datax)
+parse(p,data,varargin{:});
+</pre><h2>CDF<a name="4"></a></h2><pre class="codeinput">figh = cell(length(data),1); <span class="comment">%initialize struct for speedy memory access</span>
+<span class="keyword">for</span> i=1:length(data)
     figure;
     figh{i} = gcf;
-    nbins1 = linspace(min(datax{i}),max(datax{i}),p.Results.nbins);
-    nbins2 = linspace(min(datay{i}),max(datay{i}),p.Results.nbins);
-    n = hist3([datax{i},datay{i}],{nbins1 nbins2});
-    imagesc(nbins1,nbins2,n');
-    set(gca,<span class="string">'YDir'</span>,<span class="string">'normal'</span>);
-    jet1 = colormap(jet);
-    jet1(1,:) = 1;
-    colormap(jet1);
-    <span class="comment">%axis square;</span>
-    xlabel(<span class="string">'integrated DAPI signal'</span>);
-    ylabel(<span class="string">'mean p53 signal'</span>);
-    title(p.Results.titles{i});
-    <span class="comment">%rho = corr(datax{i},datay{i});</span>
-    <span class="comment">%str = sprintf('corr = %f',rho);</span>
+    ecdf(data{i});
+    pd = fitdist(data{i},<span class="string">'Normal'</span>);
+    x = linspace(min(data{i}),max(data{i}),100);
+    y = cdf(pd,x);
+    hold <span class="string">on</span>;
+    plot(x,y,<span class="string">'r--'</span>);
+    str = sprintf(<span class="string">'probability a cell has &lt;= x'</span>);
+    ylabel(str);
+    [h,p2] = kstest(data{i},<span class="string">'CDF'</span>,pd);
+    hold <span class="string">off</span>;
 <span class="keyword">end</span>
 resizeFig4Publication(figh,<span class="string">'16:9'</span>);
-</pre><img vspace="5" hspace="5" src="cp2DHistogram_01.png" alt=""> <img vspace="5" hspace="5" src="cp2DHistogram_02.png" alt=""> <img vspace="5" hspace="5" src="cp2DHistogram_03.png" alt=""> <h2>Create a simple webpage to conveniently view the data<a name="5"></a></h2><pre class="codeinput"><span class="keyword">if</span> p.Results.report
+</pre><img vspace="5" hspace="5" src="cpCDF_01.png" alt=""> <img vspace="5" hspace="5" src="cpCDF_02.png" alt=""> <img vspace="5" hspace="5" src="cpCDF_03.png" alt=""> <h2>Create a simple webpage to conveniently view the data<a name="5"></a></h2><pre class="codeinput"><span class="keyword">if</span> p.Results.report
     imagenames = cell(size(p.Results.titles));
     <span class="keyword">for</span> i=1:length(p.Results.titles)
-        imagenames{i} = sprintf(<span class="string">'cp2DHistogram_%s'</span>,p.Results.titles{i});
+        imagenames{i} = sprintf(<span class="string">'cpCDF_%s'</span>,p.Results.titles{i});
     <span class="keyword">end</span>
-    htmlname = fullfile(p.Results.outpath,<span class="string">'cp2DHistogram_output.html'</span>);
+    htmlname = fullfile(p.Results.outpath,<span class="string">'cpCDF_output.html'</span>);
     generateReport(figh,imagenames,p.Results.outpath,htmlname);
 <span class="keyword">end</span>
 </pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2013a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
-%% cp2DHistogram
+%% cpCDF
 %
 %% Inputs
 % * |data|, a required variable. |data| is a cell array containing time
@@ -131,56 +120,45 @@ resizeFig4Publication(figh,<span class="string">'16:9'</span>);
 % * |figh|, a struct containing the figure handles for each plot created by
 % this function. This output is useful for tweaking these plots after the
 % function call.
-function [figh] = cp2DHistogram(datax,datay,varargin)
+function [figh] = cpCDF(data,varargin)
 %% Parse input
 % The inputs into the function are parsed. If there were no inputs when the
 % function was called a set of demonstrative data is imported and
 % processed; this is useful and necessary for MATLAB-publishing this file.
 defaultOutpath = userpath;
-defaultNbins = 100;
-defaultTitles = num2cell(1:length(datax));
+defaultTitles = num2cell(1:length(data));
 defaultTitles = cellfun(@num2str,defaultTitles,'UniformOutput', false);
 
 p = inputParser;
-addRequired(p,'datax',@iscell);
-addRequired(p,'datay',@iscell);
-addParamValue(p,'nbins',defaultNbins,@isinteger);
+addRequired(p,'data',@iscell);
 addParamValue(p,'outpath',defaultOutpath,@isstr);
 addParamValue(p,'report',false,@islogical);
 addParamValue(p,'titles',defaultTitles,@(x) length(x)==length(data));
-
-if length(datax)~=length(datay)
-    error('not:good','the input data are not of the same length');
-end
-parse(p,datax,datay,varargin{:});
-%% 2DHistogram
-figh = cell(length(datax),1); %initialize struct for speedy memory access
-for i=1:length(datax)
+parse(p,data,varargin{:});
+%% CDF
+figh = cell(length(data),1); %initialize struct for speedy memory access
+for i=1:length(data)
     figure;
     figh{i} = gcf;
-    nbins1 = linspace(min(datax{i}),max(datax{i}),p.Results.nbins);
-    nbins2 = linspace(min(datay{i}),max(datay{i}),p.Results.nbins);
-    n = hist3([datax{i},datay{i}],{nbins1 nbins2});
-    imagesc(nbins1,nbins2,n');
-    set(gca,'YDir','normal');
-    jet1 = colormap(jet);
-    jet1(1,:) = 1;
-    colormap(jet1);
-    %axis square;
-    xlabel('integrated DAPI signal');
-    ylabel('mean p53 signal');
-    title(p.Results.titles{i});
-    %rho = corr(datax{i},datay{i});
-    %str = sprintf('corr = %f',rho);
+    ecdf(data{i});
+    pd = fitdist(data{i},'Normal');
+    x = linspace(min(data{i}),max(data{i}),100);
+    y = cdf(pd,x);
+    hold on;
+    plot(x,y,'rREPLACE_WITH_DASH_DASH');
+    str = sprintf('probability a cell has <= x');
+    ylabel(str);
+    [h,p2] = kstest(data{i},'CDF',pd);
+    hold off;
 end
 resizeFig4Publication(figh,'16:9');
 %% Create a simple webpage to conveniently view the data
 if p.Results.report
     imagenames = cell(size(p.Results.titles));
     for i=1:length(p.Results.titles)
-        imagenames{i} = sprintf('cp2DHistogram_%s',p.Results.titles{i});
+        imagenames{i} = sprintf('cpCDF_%s',p.Results.titles{i});
     end
-    htmlname = fullfile(p.Results.outpath,'cp2DHistogram_output.html');
+    htmlname = fullfile(p.Results.outpath,'cpCDF_output.html');
     generateReport(figh,imagenames,p.Results.outpath,htmlname);
 end
 ##### SOURCE END #####

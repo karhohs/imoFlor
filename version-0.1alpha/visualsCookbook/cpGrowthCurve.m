@@ -35,11 +35,13 @@ for i = 1:length(data)
     myBoxPlotData(1:numImages(i),i) = data{i};
 end
 boxplot(myBoxPlotData,'notch','on');
-figh{1} = gcf;
+figh = gcf;
 str = sprintf('cell density\n(nuclei per image)');
 ylabel(str);
 %%
 meancelldensity = cellfun(@mean,data)./cellfun(@length,data);
+
+resizeFig4Publication(figh,'16:9');
 %% Create a simple webpage to conveniently view the data
 if p.Results.report
     imagenames = {'cpGrowthCurve_boxplot'};

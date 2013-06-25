@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>cpGrowthCurve</title><meta name="generator" content="MATLAB 8.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2013-05-24"><meta name="DC.source" content="cpGrowthCurve.m"><style type="text/css">
+      --><title>cpGrowthCurve</title><meta name="generator" content="MATLAB 8.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2013-06-25"><meta name="DC.source" content="cpGrowthCurve.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -84,16 +84,18 @@ myBoxPlotData = NaN(maxNumImages,length(data));
     myBoxPlotData(1:numImages(i),i) = data{i};
 <span class="keyword">end</span>
 boxplot(myBoxPlotData,<span class="string">'notch'</span>,<span class="string">'on'</span>);
-figh{1} = gcf;
+figh = gcf;
 str = sprintf(<span class="string">'cell density\n(nuclei per image)'</span>);
 ylabel(str);
 </pre><img vspace="5" hspace="5" src="cpGrowthCurve_01.png" alt=""> <pre class="codeinput">meancelldensity = cellfun(@mean,data)./cellfun(@length,data);
-</pre><h2>Create a simple webpage to conveniently view the data<a name="6"></a></h2><pre class="codeinput"><span class="keyword">if</span> p.Results.report
+
+resizeFig4Publication(figh,<span class="string">'16:9'</span>);
+</pre><img vspace="5" hspace="5" src="cpGrowthCurve_02.png" alt=""> <h2>Create a simple webpage to conveniently view the data<a name="6"></a></h2><pre class="codeinput"><span class="keyword">if</span> p.Results.report
     imagenames = {<span class="string">'cpGrowthCurve_boxplot'</span>};
     htmlname = fullfile(outpath,<span class="string">'cpGrowthCurve_output.html'</span>);
     generateReport(figh,imagenames,outpath,htmlname);
 <span class="keyword">end</span>
-</pre><img vspace="5" hspace="5" src="cpGrowthCurve_02.png" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2013a</a><br></p></div><!--
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2013a</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% cpGrowthCurve
 %
@@ -132,11 +134,13 @@ for i = 1:length(data)
     myBoxPlotData(1:numImages(i),i) = data{i};
 end
 boxplot(myBoxPlotData,'notch','on');
-figh{1} = gcf;
+figh = gcf;
 str = sprintf('cell density\n(nuclei per image)');
 ylabel(str);
 %%
 meancelldensity = cellfun(@mean,data)./cellfun(@length,data);
+
+resizeFig4Publication(figh,'16:9');
 %% Create a simple webpage to conveniently view the data
 if p.Results.report
     imagenames = {'cpGrowthCurve_boxplot'};

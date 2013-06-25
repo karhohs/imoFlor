@@ -16,7 +16,7 @@ end
 %% cpCDF
 %
 myfiles = {'DefaultOUT_Nuclei_1.csv','DefaultOUT_Nuclei_2.csv','DefaultOUT_Nuclei_3.csv'};
-data = cell(1,3*length(myfiles));
+data = cell(1,length(myfiles));
 for i = 1:length(myfiles)
     mydata = alldata{i};
     data{i} = mydata.Intensity_MeanIntensity_TexasRed;
