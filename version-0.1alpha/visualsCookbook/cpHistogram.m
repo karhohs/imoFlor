@@ -45,6 +45,7 @@ for i=1:length(data)
     ylabel(str);
     title(p.Results.titles{i});
 end
+resizeFig4Publication(figh,'16:9');
 %% Create a simple webpage to conveniently view the data
 if p.Results.report
     imagenames = cell(size(p.Results.titles));

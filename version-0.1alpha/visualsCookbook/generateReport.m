@@ -34,7 +34,6 @@ end
 for i=1:length(figh)
     print(figh{i},fullfile(outpath,imagenames{i}),'-dpng',['-r',num2str(p.Results.rez)],'-opengl') %save file
     print(figh{i},fullfile(outpath,imagenames{i}),'-dpdf','-r0');
-    set(figh{i},'Position',[1 1 PaperPosition(3)*p.Results.rez PaperPosition(4)*p.Results.rez]);
 end
 
 imagenamespng = cell(size(p.Results.imagenames));

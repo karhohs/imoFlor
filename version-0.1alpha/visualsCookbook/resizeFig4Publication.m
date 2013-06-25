@@ -17,13 +17,15 @@
 % for easy viewing.
 function [] = resizeFig4Publication(figh,xydimensions,varargin)
 p = inputParser;
-addRequired(p,'figh',@(x) ((strcmp('figure',get(x,'type')))||~any(cellfun(@(y) ~strcmp('figure',get(y,'type')),x))));
+addRequired(p,'figh',@(x) iscell(x)||(strcmp('figure',get(x,'type'))));
 addRequired(p,'xydimensions',@(x) (~any(size(x)~=[1,2])||ischar(x)));
 parse(p,figh,xydimensions,varargin{:});
 if ~iscell(figh)
     myfigh = figh;
     figh = cell(1,1);
     figh{1} = myfigh;
+elseif any(cellfun(@(x) ~strcmp('figure',get(x,'type')),figh))  
+    error('reszFig4Pub:argChk','The cell array of figure handles holds an object that is not a figure handle.');
 end
 PaperSize = [8.5 11]; % The size of a piece of paper.
 if ischar(xydimensions)
