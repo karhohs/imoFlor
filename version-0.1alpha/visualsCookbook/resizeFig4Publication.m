@@ -1,17 +1,8 @@
 %% resizeFig4Publication
 %
 %% Inputs
-% * |figh|, a required variable. |data| is a cell array containing time
-% series data. In each position of the cell array resides a column vector.
-% There is a row for every cell measurement in the column vector.
-% * |imagenames|, the number of bins within a histogram or if this is an
-% array, the centers of histogram boxes. The default value is 100.
-% * |outpath|, the directory where image files will be saved. By default
-% this is the user's home in the MATLAB(R) path.
-% * |report|, a boolean variable to indicate if a report should be
-% generated. By default this is |false|.
-% * |titles|, the titles that will be placed above each figure. There must
-% be a title for each column vector in the |data| cell array.
+% * |figh|, 
+% * |xydimensions|, 
 %%% Outputs
 % In addition to the images created by this function a web page is created
 % for easy viewing.
