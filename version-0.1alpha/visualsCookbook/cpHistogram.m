@@ -16,7 +16,7 @@
 % * |figh|, a struct containing the figure handles for each plot created by
 % this function. This output is useful for tweaking these plots after the
 % function call.
-function [figh] = cpHistogram(data,varargin)
+function [figh,axesh] = cpHistogram(data,varargin)
 %% Parse input
 % The inputs into the function are parsed. If there were no inputs when the
 % function was called a set of demonstrative data is imported and
@@ -35,8 +35,12 @@ addParamValue(p,'titles',defaultTitles,@(x) length(x)==length(data));
 
 parse(p,data,varargin{:});
 outpath = p.Results.outpath;
+if ~isdir(outpath)
+    mkdir(outpath);
+end
 %% histogram
 figh = cell(length(data),1); %initialize struct for speedy memory access
+axesh = cell(length(data),1);
 for i=1:length(data)
     figure;
     figh{i} = gcf;
@@ -44,6 +48,7 @@ for i=1:length(data)
     str = sprintf('number of cells');
     ylabel(str);
     title(p.Results.titles{i});
+    axesh{i} = gca;
 end
 resizeFig4Publication(figh,'16:9');
 %% Create a simple webpage to conveniently view the data
@@ -51,6 +56,8 @@ if p.Results.report
     imagenames = cell(size(p.Results.titles));
     for i=1:length(p.Results.titles)
         imagenames{i} = sprintf('cpHistogram_%s',p.Results.titles{i});
+        imagenames{i} = regexprep(imagenames{i},'\s','');
+        imagenames{i} = regexprep(imagenames{i},',','_');
     end
     htmlname = fullfile(outpath,'cpHistogram_output.html');
     generateReport(figh,imagenames,outpath,htmlname);
