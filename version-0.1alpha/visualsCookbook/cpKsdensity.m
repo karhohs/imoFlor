@@ -1,4 +1,4 @@
-%% cpHistogram
+%% cpKsdensity
 %
 %% Inputs
 % * |data|, a required variable. |data| is a cell array containing time
@@ -19,7 +19,7 @@
 % * |axesh|, a cell containing the axes handles for each plot created by
 % this function. This output is useful for tweaking these plots after the
 % function call.
-function [figh,axesh] = cpHistogram(data,varargin)
+function [figh,axesh] = cpKsdensity(data,varargin)
 %% Parse input
 % The inputs into the function are parsed. If there were no inputs when the
 % function was called a set of demonstrative data is imported and
@@ -31,7 +31,7 @@ defaultTitles = cellfun(@num2str,defaultTitles,'UniformOutput', false);
 
 p = inputParser;
 addRequired(p,'data',@iscell);
-addParamValue(p,'nbins',defaultNbins,@isinteger);
+addParamValue(p,'npoints',defaultNbins,@isinteger);
 addParamValue(p,'outpath',defaultOutpath,@isstr);
 addParamValue(p,'report',false,@islogical);
 addParamValue(p,'titles',defaultTitles,@(x) length(x)==length(data));
