@@ -35,19 +35,27 @@ addParamValue(p,'npoints',defaultNbins,@isinteger);
 addParamValue(p,'outpath',defaultOutpath,@isstr);
 addParamValue(p,'report',false,@islogical);
 addParamValue(p,'titles',defaultTitles,@(x) length(x)==length(data));
+addParamValue(p,'asLog',false,@islogical);
 
 parse(p,data,varargin{:});
 outpath = p.Results.outpath;
 if ~isdir(outpath)
     mkdir(outpath);
 end
-%% histogram
+%% ksdensity
 figh = cell(length(data),1); %initialize cell for speedy memory access
 axesh = cell(length(data),1);
 for i=1:length(data)
     figure;
     figh{i} = gcf;
-    hist(data{i},p.Results.nbins);
+    if p.Results.asLog
+        mydata = log(data{i});
+        [f,xi] = ksdensity(mydata);
+        xi = exp(xi);
+    else
+        [f,xi] = ksdensity(data{i});
+    end
+    plot(xi,f);
     str = sprintf('number of cells');
     ylabel(str);
     title(p.Results.titles{i});
