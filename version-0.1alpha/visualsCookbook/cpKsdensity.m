@@ -55,11 +55,13 @@ for i=1:length(data)
     else
         [f,xi] = ksdensity(data{i});
     end
-    plot(xi,f);
+    loglog(xi,f);
     str = sprintf('number of cells');
     ylabel(str);
     title(p.Results.titles{i});
     axesh{i} = gca;
+    %
+  
 end
 resizeFig4Publication(figh,'16:9');
 %% Create a simple webpage to conveniently view the data
