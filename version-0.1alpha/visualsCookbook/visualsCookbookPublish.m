@@ -79,6 +79,22 @@ clear('options_doc');
 options_doc.codeToEvaluate = 'cp2DHistogram(datax,datay,''outpath'',outpath,''report'',true)';
 options_doc.maxOutputLines = 0;
 publish(fullfile(mfilepath,'cp2DHistogram.m'),options_doc);
+%% cp2DensityScatter
+%
+datax = cell(1,length(myfiles));
+datay = cell(1,length(myfiles));
+for i = 1:length(myfiles)
+    mydata = alldata{i};
+    datax{i} = mydata.Intensity_IntegratedIntensity_DAPI;
+end
+for i = 1:length(myfiles)
+    mydata = alldata{i};
+    datay{i} = mydata.Intensity_MeanIntensity_TexasRed;
+end
+clear('options_doc');
+options_doc.codeToEvaluate = 'cp2DensityScatter(datax,datay,''outpath'',outpath,''report'',true)';
+options_doc.maxOutputLines = 0;
+publish(fullfile(mfilepath,'cp2DensityScatter.m'),options_doc);
 %% cpKsdensity
 %
 myfiles = {'DefaultOUT_Nuclei_1.csv','DefaultOUT_Nuclei_2.csv','DefaultOUT_Nuclei_3.csv'};

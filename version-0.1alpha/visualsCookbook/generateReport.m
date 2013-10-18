@@ -40,7 +40,7 @@ end
 %% Save image files
 for i=1:length(figh)
     print(figh{i},fullfile(outpath,imagenames{i}),'-dpng',['-r',num2str(p.Results.rez)],'-opengl') %save file
-    print(figh{i},fullfile(outpath,imagenames{i}),'-dpdf','-r0');
+    %print(figh{i},fullfile(outpath,imagenames{i}),'-dpdf','-r0');
     print(figh{i},fullfile(outpath,imagenames{i}),'-depsc2','-r0');
 end
 

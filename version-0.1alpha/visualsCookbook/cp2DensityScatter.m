@@ -1,4 +1,4 @@
-%% cp2DHistogram
+%% cp2DDensityScatter
 %
 %% Inputs
 % * |data|, a required variable. |data| is a cell array containing time
@@ -16,7 +16,7 @@
 % * |figh|, a struct containing the figure handles for each plot created by
 % this function. This output is useful for tweaking these plots after the
 % function call.
-function [figh] = cp2DHistogram(datax,datay,varargin)
+function [figh] = cp2DensityScatter(datax,datay,varargin)
 %% Parse input
 % The inputs into the function are parsed. If there were no inputs when the
 % function was called a set of demonstrative data is imported and
@@ -38,16 +38,35 @@ if length(datax)~=length(datay)
     error('not:good','the input data are not of the same length');
 end
 parse(p,datax,datay,varargin{:});
-%% 2DHistogram
+%% 2DDensityScatter
 figh = cell(length(datax),1); %initialize struct for speedy memory access
 for i=1:length(datax)
     figure;
     figh{i} = gcf;
-    nbins1 = linspace(min(datax{i}),max(datax{i}),p.Results.nbins);
-    nbins2 = linspace(min(datay{i}),max(datay{i}),p.Results.nbins);
-    n = hist3([datax{i},datay{i}],{nbins1 nbins2});
-    imagesc(nbins1,nbins2,n');
-    set(gca,'YDir','normal');
+    %guess a good density measurement
+    numberOfbins = round(sqrt(length(datax{i})));
+    nbins1 = linspace(min(datax{i}),max(datax{i}),numberOfbins);
+    nbins2 = linspace(min(datay{i}),max(datay{i}),numberOfbins);
+    [n,c] = hist3([datax{i},datay{i}],{nbins1 nbins2});
+    F = scatteredInterpolant(c(:,1),c(:,2),v);
+    colors = zeros(size(datax{i}));
+    for j = 1:length(datax{i})
+        for k = 1:length(nbins1)
+            if datax{i}(j) <= nbins1(k+1)
+                break
+            end
+        end
+        indx = k;
+        for k = 1:length(nbins2)
+            if datay{i}(j) <= nbins2(k+1)
+                break
+            end
+        end
+        indy = k;
+        colors(j) = n(indx,indy);
+    end
+    scatter(datax{i},datay{i},20,colors,'fill');
+    %set(gca,'YDir','normal');
     jet1 = colormap(jet);
     jet1(1,:) = 1;
     colormap(jet1);
