@@ -6,7 +6,7 @@
 %%% Outputs
 % In addition to the images created by this function a web page is created
 % for easy viewing.
-function [] = resizeFig4Publication(figh,xydimensions,varargin)
+function [] = resizeFig4Publication2(figh,xydimensions,varargin)
 p = inputParser;
 addRequired(p,'figh',@(x) iscell(x)||(strcmp('figure',get(x,'type'))));
 addRequired(p,'xydimensions',@(x) (~any(size(x)~=[1,2])||ischar(x)));
