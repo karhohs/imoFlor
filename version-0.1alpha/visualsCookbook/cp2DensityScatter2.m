@@ -22,7 +22,7 @@ function [figh] = cp2DensityScatter2(datax,datay,varargin)
 % function was called a set of demonstrative data is imported and
 % processed; this is useful and necessary for MATLAB-publishing this file.
 defaultOutpath = userpath;
-defaultNbins = 100;
+defaultNbins = 500;
 defaultTitle = 'a wild scatter plot has appeared!';
 
 p = inputParser;
@@ -45,6 +45,7 @@ numberOfbins = round(sqrt(length(datax)));
 nbins1 = linspace(min(datax),max(datax),numberOfbins);
 nbins2 = linspace(min(datay),max(datay),numberOfbins);
 [n,c] = hist3([datax,datay],{nbins1 nbins2});
+n = imfilter(n,fspecial('average',5),'replicate');
 X = zeros(length(c{1})*length(c{2}),2);
 V = zeros(length(c{1})*length(c{2}),1);
 for i = 1:length(c{1})
@@ -65,7 +66,7 @@ xyv = flipud(xyv);
 datax = xyv(:,1);
 datay = xyv(:,2);
 Vq = xyv(:,3);
-h = scatter(datax,datay,10,Vq,'o','fill');
+h = scatter(datax,datay,20,Vq,'o','fill');
 %set(h,'SizeData',10);
 
 %axis square;

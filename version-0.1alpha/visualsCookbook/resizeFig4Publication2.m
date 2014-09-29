@@ -1,4 +1,4 @@
-%% resizeFig4Publication
+%% resizeFig4Publication2
 %
 %% Inputs
 % * |figh|, 
@@ -16,7 +16,7 @@ if ~iscell(figh)
     figh = cell(1,1);
     figh{1} = myfigh;
 elseif any(cellfun(@(x) ~strcmp('figure',get(x,'type')),figh))  
-    error('reszFig4Pub:argChk','The cell array of figure handles holds an object that is not a figure handle.');
+    error('reszFig4Pub2:argChk','The cell array of figure handles holds an object that is not a figure handle.');
 end
 PaperSize = [8.5 11]; % The size of a piece of paper.
 if ischar(xydimensions)
@@ -49,28 +49,43 @@ ppi = ppi(4);
 for i=1:length(figh)
     f = figh{i};
     h = findall(f,'type','axes','-not','Tag','legend','-not','Tag','Colorbar');
-    h=h(1); %use the first data axes for resizing purposes
     %%
     % get the size of the figure (pixels)
     fPosition = get(f,'Position');
     %%
     % get the outer-position and position of the axes (normalized units)
-    hOuterPosition = get(h,'OuterPosition');
-    hPosition = get(h,'Position');
+    hOuterPosition1 = get(h(1),'OuterPosition');
+    hPosition1 = get(h(1),'Position');
     %%
     % Calculate the normalized units per inch in both x and y direction
-    npix = hOuterPosition(3)*ppi/fPosition(3);
-    npiy = hOuterPosition(4)*ppi/fPosition(4);
-    %%
-    % Alter the axes size to reflect the desired dimensions of the figure
-    hPosition(3) = axesPositionSize(1)*npix;
-    hPosition(4) = axesPositionSize(2)*npiy;
-    set(h,'Position',hPosition);
+    npix = hOuterPosition1(3)*ppi/fPosition(3);
+    npiy = hOuterPosition1(4)*ppi/fPosition(4);
     %%
     % Adjust the figure size to encompass the resized axes
-    hOuterPosition = get(h,'OuterPosition'); %The outerposition has automatically been redefined
-    hOuterPosition(1:2) = [0,0]; %Make sure the origin is set to the bottom left of the figure
-    set(h,'OuterPosition',hOuterPosition);
+    hOuterPosition1 = get(h(1),'OuterPosition'); %The outerposition has automatically been redefined
+    hOuterPosition2 = get(h(2),'OuterPosition');
+    x_offset = min([hOuterPosition1(1),hOuterPosition2(1)]);
+    y_offset = min([hOuterPosition1(2),hOuterPosition2(2)]);
+    hOuterPosition1 = hOuterPosition1-[x_offset,y_offset,0,0];
+    hOuterPosition2 = hOuterPosition2-[x_offset,y_offset,0,0];
+    set(h(1),'OuterPosition',hOuterPosition1);
+    set(h(2),'OuterPosition',hOuterPosition2);
+    %%
+    % Alter the axes size to reflect the desired dimensions of the figure
+    hPosition1 = get(h(1),'Position');
+    hPosition1(3) = axesPositionSize(1)*npix;
+    hPosition1(4) = axesPositionSize(2)*npiy;
+    set(h(1),'Position',hPosition1);
+    set(h(2),'Position',hPosition1);
+    
+    hOuterPosition1 = get(h(1),'OuterPosition'); %The outerposition has automatically been redefined
+    hOuterPosition2 = get(h(2),'OuterPosition');
+    x_offset = min([hOuterPosition1(1),hOuterPosition2(1)]);
+    y_offset = min([hOuterPosition1(2),hOuterPosition2(2)]);
+    width = max([hOuterPosition1(3)+hOuterPosition1(1),hOuterPosition2(3)+hOuterPosition2(1)])+x_offset;
+    height = max([hOuterPosition1(4)+hOuterPosition1(2),hOuterPosition2(4)+hOuterPosition2(2)])+y_offset;
+    hOuterPosition = [x_offset,y_offset,width,height];
+    
     set(h,'Units','inches'); %break the automatic resizing between figure and axes
     fPosition(3) = hOuterPosition(3)/npix*ppi;
     fPosition(4) = hOuterPosition(4)/npiy*ppi;
