@@ -32,6 +32,8 @@ addParamValue(p,'nbins',defaultNbins,@isinteger);
 addParamValue(p,'outpath',defaultOutpath,@isstr);
 addParamValue(p,'report',false,@islogical);
 addParamValue(p,'title',defaultTitle,@ischar);
+addParamValue(p,'smooth',5,@isnumeric);
+addParamValue(p,'markerSize',20,@isnumeric);
 
 if length(datax)~=length(datay)
     error('not:good','the input data are not of the same length');
@@ -45,7 +47,7 @@ numberOfbins = round(sqrt(length(datax)));
 nbins1 = linspace(min(datax),max(datax),numberOfbins);
 nbins2 = linspace(min(datay),max(datay),numberOfbins);
 [n,c] = hist3([datax,datay],{nbins1 nbins2});
-n = imfilter(n,fspecial('average',5),'replicate');
+n = imfilter(n,fspecial('average',p.Results.smooth),'replicate');
 X = zeros(length(c{1})*length(c{2}),2);
 V = zeros(length(c{1})*length(c{2}),1);
 for i = 1:length(c{1})
@@ -66,7 +68,7 @@ xyv = flipud(xyv);
 datax = xyv(:,1);
 datay = xyv(:,2);
 Vq = xyv(:,3);
-h = scatter(datax,datay,20,Vq,'o','fill');
+h = scatter(datax,datay,p.Results.markerSize,Vq,'o','fill');
 %set(h,'SizeData',10);
 
 %axis square;
