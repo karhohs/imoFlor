@@ -28,12 +28,12 @@ defaultTitle = 'a wild scatter plot has appeared!';
 p = inputParser;
 addRequired(p,'datax',@isnumeric);
 addRequired(p,'datay',@isnumeric);
-addParamValue(p,'nbins',defaultNbins,@isinteger);
-addParamValue(p,'outpath',defaultOutpath,@isstr);
-addParamValue(p,'report',false,@islogical);
-addParamValue(p,'title',defaultTitle,@ischar);
-addParamValue(p,'smooth',5,@isnumeric);
-addParamValue(p,'markerSize',20,@isnumeric);
+addParameter(p,'nbins',defaultNbins,@isnumeric);
+addParameter(p,'outpath',defaultOutpath,@isstr);
+addParameter(p,'report',false,@islogical);
+addParameter(p,'title',defaultTitle,@ischar);
+addParameter(p,'smooth',5,@isnumeric);
+addParameter(p,'markerSize',20,@isnumeric);
 
 if length(datax)~=length(datay)
     error('not:good','the input data are not of the same length');
