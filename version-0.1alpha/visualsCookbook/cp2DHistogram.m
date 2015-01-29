@@ -22,17 +22,18 @@ function [figh] = cp2DHistogram(datax,datay,varargin)
 % function was called a set of demonstrative data is imported and
 % processed; this is useful and necessary for MATLAB-publishing this file.
 defaultOutpath = userpath;
-defaultNbins = 100;
+defaultNbins = -1;
 defaultTitles = num2cell(1:length(datax));
 defaultTitles = cellfun(@num2str,defaultTitles,'UniformOutput', false);
 
 p = inputParser;
 addRequired(p,'datax',@iscell);
 addRequired(p,'datay',@iscell);
-addParamValue(p,'nbins',defaultNbins,@isinteger);
-addParamValue(p,'outpath',defaultOutpath,@isstr);
-addParamValue(p,'report',false,@islogical);
-addParamValue(p,'titles',defaultTitles,@(x) length(x)==length(datax));
+addParameter(p,'nbinsx',defaultNbins,@isnumeric);
+addParameter(p,'nbinsy',defaultNbins,@isnumeric);
+addParameter(p,'outpath',defaultOutpath,@isstr);
+addParameter(p,'report',false,@islogical);
+addParameter(p,'titles',defaultTitles,@(x) length(x)==length(datax));
 
 if length(datax)~=length(datay)
     error('not:good','the input data are not of the same length');
@@ -43,8 +44,18 @@ figh = cell(length(datax),1); %initialize struct for speedy memory access
 for i=1:length(datax)
     figure;
     figh{i} = gcf;
-    nbins1 = linspace(min(datax{i}),max(datax{i}),p.Results.nbins);
-    nbins2 = linspace(min(datay{i}),max(datay{i}),p.Results.nbins);
+    
+    if p.Results.nbinsx == -1
+        nbins1 = linspace(min(datax{i}),max(datax{i}),100);
+    else
+        nbins1 = linspace(min(datax{i}),max(datax{i}),p.Results.nbinsx);
+    end
+    if p.Results.nbinsy == -1
+        nbins2 = linspace(min(datay{i}),max(datay{i}),100);
+    else
+        nbins2 = linspace(min(datay{i}),max(datay{i}),p.Results.nbinsy);
+    end
+    
     n = hist3([datax{i},datay{i}],{nbins1 nbins2});
     imagesc(nbins1,nbins2,n');
     set(gca,'YDir','normal');

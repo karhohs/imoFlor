@@ -16,7 +16,7 @@
 % * |figh|, a struct containing the figure handles for each plot created by
 % this function. This output is useful for tweaking these plots after the
 % function call.
-function [figh] = cp2DensityScatter2(datax,datay,varargin)
+function [figh] = cp2DensityScatter3(datax,datay,varargin)
 %% Parse input
 % The inputs into the function are parsed. If there were no inputs when the
 % function was called a set of demonstrative data is imported and
@@ -46,9 +46,9 @@ figh = gcf;
 %guess a good density measurement
 numberOfbins = round(sqrt(length(datax)));
 if p.Results.nbinsx == -1
-    nbins1 = linspace(min(datax),max(datax),numberOfbins);
+    nbins1 = linspace(min(datax)-0.5,max(datax)+0.5,numberOfbins+1);
 else
-    nbins1 = linspace(min(datax),max(datax),p.Results.nbinsx);
+    nbins1 = linspace(min(datax)-0.5,max(datax)+0.5,p.Results.nbinsx+1);
 end
 numberOfbins = round(sqrt(length(datay)));
 if p.Results.nbinsy == -1
@@ -56,7 +56,6 @@ if p.Results.nbinsy == -1
 else
     nbins2 = linspace(min(datay),max(datay),p.Results.nbinsy);
 end
-
 
 [n,c] = hist3([datax,datay],{nbins1 nbins2});
 n = imfilter(n,fspecial('average',p.Results.smooth),'replicate');
@@ -82,7 +81,10 @@ datay = xyv(:,2);
 Vq = xyv(:,3);
 h = scatter(datax,datay,p.Results.markerSize,Vq,'o','fill');
 %set(h,'SizeData',10);
-
+[iy,ix] = ndgrid(nbins2,nbins1);
+iy = reshape(iy,[],1);
+ix = reshape(ix,[],1);
+Vq2 = F(ix,iy);
 %axis square;
 xlabel('gamma h2ax signal');
 ylabel('mean p53 signal');
