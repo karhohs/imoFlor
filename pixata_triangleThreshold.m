@@ -28,7 +28,7 @@ outlierQuantile = p.Results.outlierQuantile;
 % Create the histogram
 A=double(reshape(I,[],1));
 A = A(A <= quantile(A, outlierQuantile));
-[n,xout]=hist(A,100);
+[n,xout]=hist(A,round(sqrt(numel(A))*2/3));
 %%%
 % Find the highest peak the histogram
 [c,ind]=max(n);

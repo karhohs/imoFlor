@@ -17,7 +17,7 @@
 % There is no detailed description.
 %
 %%% Other Notes
-% 
+%
 function [bblThresh] = pixata_bigBellLeftThreshold(I, varargin)
 
 p = inputParser;
@@ -32,20 +32,52 @@ outlierQuantile = p.Results.outlierQuantile;
 A=double(reshape(I,[],1));
 [n,xout]=hist(A,round(sqrt(numel(A))*2/3));
 %%%
-% find the mean of the big 
+% find the mean of the big
 lbc = A(A <= quantile(A, 1-outlierQuantile) & A >= quantile(A, outlierQuantile));
 muLbc = mean(lbc);
-muInd = find(n < muLbc,1,'last');
+muInd = find(xout < muLbc,1,'last');
+if muInd <= 4
+    error('pixata_bblThresh:notEnoughData','There was not enough data or the shape of the histogram was not appropriate for this algorithm');
+end
 nSmooth = smooth(n,round(sqrt(muInd)));
 nDiff = smooth(diff(nSmooth),round(sqrt(muInd)));
 %%%
-% if the 
+%
 if muInd == 1
     bblThresh = n(1);
     warning('bblThresh:weird','The threshold was the leftmost value, which is strange. Make sure the data resembles a big bell curve with noise to the left.');
     return
 end
-for i = muInd:-1:1
-    
+%%%
+% Going from left to right...
+%
+% # wait for the curve to increase for two consecutive steps, then
+% # wait for the curve to decrease for two consecutive steps
+% # the step of the first decrease is the threshold
+upcounter = 0;
+downcounter = 0;
+value2 = nDiff(muInd);
+for i = muInd:-1:2
+    value1 = nDiff(i);
+    if upcounter ~= 2
+        if value1 > value2
+            upcounter = upcounter+1;
+        else
+            upcounter = 0;
+        end
+        value2 = value1;
+        continue
+    end
+    if downcounter ~= 2
+        if value1 < value2
+            downcounter = downcounter + 1;
+        else
+            downcounter = 0;
+        end
+        value2 = value1;
+        continue
+    end
+    break
 end
+bblThresh = xout(i);
 end
